@@ -14,9 +14,16 @@ This repository is [somerandomusernam2/AEmulator-Plus](https://github.com/somera
 | --- | --- | --- |
 | `33db9f6` | 3.16 option strings and 18 missing keys in all 58 locales (288 files, strings only; author @power690 kept) | [PR #127](https://github.com/somerandomusernam2/AEmulator-Plus/pull/127) |
 | `5f24722` | Network ADB switch persisted per VM and started at boot; dialog and shell broadcast share one path; unit test | [Issue #126](https://github.com/somerandomusernam2/AEmulator-Plus/issues/126) |
+| `f6c1146` | Repair the inherited JVM test suite (duplicate class, JUnit imports, stale call signatures, real `org.json`, 2 GiB test heap, missing fixture, test drift) | — |
 | personal branding/docs | Version identity, update endpoint and GitHub link point at this fork; README/AGENT docs; CI workflow | — |
 
 Keep later work in separate, small commits and keep this table current.
+
+Upstream 0.0.0.3.16 does not run `testReleaseUnitTest` successfully: `PldHintsTest.kt.kt` duplicates a class,
+`BootClasspathRelocateTest` imports `kotlin.test`, `LgKdzEncryptedTest` predates a `Predicate<String>` parameter, and
+`android.jar` only ships throwing `org.json` stubs. The personal patch fixes the test build (and removes the obsolete
+`engines/n64-x86_64` leftover) so CI can use the suite as a real gate. If upstream fixes it differently when syncing,
+prefer upstream and drop this commit.
 
 ## Network ADB behavior
 

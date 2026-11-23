@@ -46,6 +46,9 @@ The personal patch currently contains:
    at this fork instead of upstream, and CI builds both debug and release APKs.
 4. **GitHub Actions builds** — [.github/workflows/android.yml](.github/workflows/android.yml) runs the unit tests and
    builds debug + release APKs on every push and tag. Nothing is compiled on the maintenance PC.
+5. **A test suite that actually runs** — upstream 0.0.0.3.16 cannot execute `testReleaseUnitTest` (a duplicate test
+   class, a missing `kotlin.test` dependency, stale call signatures, `android.jar`'s `org.json` stubs, a too-small test
+   heap and some test drift). Those are repaired here, so CI is a real signal rather than a build-only check.
 
 See [docs/personal-patch.md](docs/personal-patch.md) for the exact diff and the
 [upstream triage](docs/upstream-triage.md) for which open issues/PRs were considered (and why most engine bugs are not
@@ -64,7 +67,7 @@ ideally a Snapdragon SoC (Mali GPUs have known issues).
 ## Build
 
 The tested toolchain is JDK 21, Android SDK platform 36, build-tools 36.0.0 and the checked-in Gradle 8.14.2 wrapper.
-Kotlin/Java bytecode targets Java 17.
+Kotlin/Java bytecode targets Java 17. AI agents should read [AGENT.md](AGENT.md) before changing anything.
 
 ### GitHub Actions (recommended here)
 
