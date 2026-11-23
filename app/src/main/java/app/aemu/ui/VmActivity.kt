@@ -1531,6 +1531,9 @@ open class VmActivity : ComponentActivity() {
             if (romNote.isNotBlank() && !vm.recoveryMode && !vm.lowPowerBoot && !showLog && !menu) {
                 Surface(shape = MaterialTheme.shapes.large,
                     color = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.95f),
+                    // Sunset.37 fix (upstream drel4/AEmulator-Sunset 47853d4): a translucent custom colour does not
+                    // always resolve a content colour, which left the note unreadable in some themes.
+                    contentColor = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.align(Alignment.TopCenter).statusBarsPadding().padding(top = 56.dp, start = 16.dp, end = 16.dp)
                         .widthIn(max = 360.dp).heightIn(max = 200.dp)) {
                     Column(Modifier.verticalScroll(rememberScrollState()).padding(16.dp)) {
@@ -1550,6 +1553,8 @@ open class VmActivity : ComponentActivity() {
             val pillState = state == GuestVm.State.BOOTING || state == GuestVm.State.PREPARING
             if (pillState && cardMinimized && !showLog && (cardOverride == true || vm.screenUpAt == 0L)) {
                 Surface(shape = CircleShape, color = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.9f),
+                    // Sunset.37 fix, same reason as the note card above.
+                    contentColor = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.align(Alignment.TopStart).displayCutoutPadding().statusBarsPadding().padding(8.dp)
                         .clip(CircleShape).clickable { cardOverride = false }) {
                     Row(Modifier.padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
