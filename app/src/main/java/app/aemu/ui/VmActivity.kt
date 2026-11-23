@@ -670,7 +670,7 @@ open class VmActivity : ComponentActivity() {
                     java.io.File(vm.paths.bin, name).writeText("shown=${guest.shown} direct=${guest.passthrough} ms=${android.os.SystemClock.uptimeMillis()}\n")
                     return
                 }
-                if (i.hasExtra("adb")) { if (i.getBooleanExtra("adb", false)) vm.adb.start() else vm.adb.stop(); return }
+                if (i.hasExtra("adb")) { vm.setAdbEnabled(i.getBooleanExtra("adb", false)); return }
                 val cmd = i.getStringExtra("cmd") ?: return
                 // своё имя файла на каждую команду: медленная предыдущая команда не затрёт ответ
                 val name = i.getStringExtra("out")?.takeIf { it.matches(Regex("[A-Za-z0-9_.-]+")) } ?: "shell.out"
@@ -1318,7 +1318,7 @@ open class VmActivity : ComponentActivity() {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(stringResource(R.string.m_adb_enable), Modifier.weight(1f))
-                        Switch(on, { v -> if (v) vm.adb.start() else vm.adb.stop(); on = vm.adb.running })
+                        Switch(on, { v -> vm.setAdbEnabled(v); on = vm.adb.running })
                     }
                     if (on) {
                         val ips = app.aemu.core.AdbServer.addresses()

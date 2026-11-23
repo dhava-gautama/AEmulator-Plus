@@ -186,6 +186,13 @@ data class VmSettings(
      * Optional and risky (crashes, glitches, firmware that needs a boot image cannot start). Applies at the next full VM boot.
      */
     val disableDex2oat: Boolean = false,
+    /**
+     * Added for the personal patch (2026-11-23): remember the VM menu's "ADB over network" switch per VM and start
+     * [AdbServer] automatically when the machine boots, so `adb connect` keeps working after a VM/app restart.
+     * The listening port stays dynamic (first free port in 5555..5585) on purpose: a fixed port on 0.0.0.0 would make
+     * the guest's root shell easier to find on a shared network. See docs/personal-patch.md.
+     */
+    val adb: Boolean = false,
 ) {
     fun toJson(): JSONObject = JSONObject()
         .put("width", width).put("height", height).put("density", density)
@@ -220,6 +227,7 @@ data class VmSettings(
         .put("skipPermissionWait", skipPermissionWait)
         .put("useArtBootImage", useArtBootImage)
         .put("disableDex2oat", disableDex2oat)
+        .put("adb", adb)
 
     companion object {
         const val NAV_DEFAULT = "back,home,recents,menu"
@@ -404,6 +412,7 @@ data class VmSettings(
                 skipPermissionWait = o.optBoolean("skipPermissionWait", d.skipPermissionWait),
                 useArtBootImage = o.optBoolean("useArtBootImage", d.useArtBootImage),
                 disableDex2oat = o.optBoolean("disableDex2oat", d.disableDex2oat),
+                adb = o.optBoolean("adb", d.adb),
             )
         }
     }

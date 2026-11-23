@@ -113,6 +113,27 @@ class GuestVm(val ctx: Context, val img: GuestImage, val lowPowerBoot: Boolean =
     private val adbdListeners = CopyOnWriteArrayList<(Boolean) -> Unit>()
     fun onAdbd(l: (Boolean) -> Unit) { adbdListeners.add(l) }
     fun removeOnAdbd(l: (Boolean) -> Unit) { adbdListeners.remove(l) }
+
+    /**
+     * Added for the personal patch (2026-11-23, upstream issue #126): the VM menu's "ADB over network" switch is a
+     * per-VM setting now. [setAdbEnabled] starts/stops [AdbServer] and stores the state in image.json, so the server is
+     * started again on the next boot of this machine ([startSavedAdb]) instead of being re-enabled by hand.
+     * Returns whether the server is running; a failed start (no free port) is stored as off.
+     */
+    fun setAdbEnabled(enabled: Boolean): Boolean {
+        val running = if (enabled) adb.start() else { adb.stop(); adb.running }
+        adbSaved = enabled && running
+        runCatching {
+            ImageStore.update(ctx, img.id) { it.copy(settings = it.settings.copy(adb = adbSaved)) }
+        }
+        return running
+    }
+
+    /** Starts network ADB at boot when the person left the switch on (see [setAdbEnabled]). */
+    fun startSavedAdb() {
+        if (adbSaved && !adb.running) adb.start()
+    }
+
     private fun setAdbd(up: Boolean) {
         if (adbdUp == up) return
         adbdUp = up
@@ -122,6 +143,8 @@ class GuestVm(val ctx: Context, val img: GuestImage, val lowPowerBoot: Boolean =
 
     /** Shell and adb are offered while the guest's adbd is up and the machine is on its way up or up (not recovery). */
     val adbAvailable: Boolean get() = VmUiPolicy.adbAvailable(state.name, adbdUp, recoveryMode)
+    /** Personal patch: the saved network-ADB switch. A var so a manual toggle also applies to a reboot in this process. */
+    @Volatile private var adbSaved = img.settings.adb
     @Volatile var bootAt = 0L
         private set
     @Volatile var bootDoneAt = 0L
@@ -375,6 +398,9 @@ class GuestVm(val ctx: Context, val img: GuestImage, val lowPowerBoot: Boolean =
         stopping = false
         failure = null
         setAdbd(false)
+        // Personal patch (upstream #126): bring the saved network ADB back for every boot, including VM reboots in the
+        // same process, where the activity is not recreated and onCreate() would not run again.
+        startSavedAdb()
         setState(State.PREPARING)
         try {
             if (recoveryMode) doRecovery() else if (lowPowerBoot) doCharging() else if (nativeBoot) doMmi() else doBoot()
