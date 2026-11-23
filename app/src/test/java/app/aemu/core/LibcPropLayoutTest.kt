@@ -11,7 +11,8 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class LibcPropLayoutTest {
-    private fun libc(): ByteArray = javaClass.getResourceAsStream("/libc-androidx86-51.so")!!.readBytes()
+    // Android's unit-test resource packaging skips *.so files; the other ELF fixtures are read from src/test/resources too.
+    private fun libc(): ByteArray = File("src/test/resources/libc-androidx86-51.so").readBytes()
 
     @Test fun androidX86LibcReadsTheSerialAt0x80() {
         assertEquals(0x80, LibcPropLayout.serialOffset(libc()))

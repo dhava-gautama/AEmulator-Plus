@@ -111,6 +111,9 @@ android {
     }
     buildFeatures { compose = true; buildConfig = true }
     lint { abortOnError = false; checkReleaseBuilds = false }
+    // Personal patch, 2026-11-23: the unit tests exercise real org.json round-trips and one 64 MiB LZMA dictionary;
+    // the default test worker heap is too small and android.jar's org.json stubs throw "not mocked".
+    testOptions { unitTests.all { it.maxHeapSize = "2g" } }
 }
 
 dependencies {
@@ -134,6 +137,7 @@ dependencies {
     implementation("org.anarres.lzo:lzo-commons:1.0.6")
     debugImplementation("androidx.compose.ui:ui-tooling")
     testImplementation("junit:junit:4.13.2")
+    testImplementation("org.json:json:20251224") // real org.json in JVM tests (android.jar only has stubs)
 }
 
 tasks.named("preBuild") { dependsOn(copyLegalNotices) }

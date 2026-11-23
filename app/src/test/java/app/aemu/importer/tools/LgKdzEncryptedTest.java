@@ -213,7 +213,7 @@ public class LgKdzEncryptedTest {
         Fw fw = new Fw(false);
         File f = kdz(cab(new String[]{"GW620-V10i.dz", "updater.dll"}, new byte[][]{fw.dz, random(5000, 3)}, 1), "fw.kdz");
         List<String> log = new ArrayList<>();
-        List<Artifact> out = LgKdz.extractEncryptedKdz(f, tmp.newFolder("w1"), log::add);
+        List<Artifact> out = LgKdz.extractEncryptedKdz(f, tmp.newFolder("w1"), s -> true, log::add);
 
         assertEquals(2, out.size());
         assertArrayEquals(fw.system, read(find(out, Role.SYSTEM)));
@@ -226,7 +226,7 @@ public class LgKdzEncryptedTest {
     @Test public void chunksAreJoinedByChunkNumberNotByPosition() throws Exception {
         Fw fw = new Fw(true);
         File f = kdz(cab(new String[]{"fw.dz"}, new byte[][]{fw.dz}, 1), "rev.kdz");
-        List<Artifact> out = LgKdz.extractEncryptedKdz(f, tmp.newFolder("w2"), s -> {});
+        List<Artifact> out = LgKdz.extractEncryptedKdz(f, tmp.newFolder("w2"), s -> true, s -> {});
         assertArrayEquals(fw.system, read(find(out, Role.SYSTEM)));
     }
 
@@ -239,7 +239,7 @@ public class LgKdzEncryptedTest {
         dz[sstx + 0xA4] ^= 0x55;
         File f = kdz(cab(new String[]{"fw.dz"}, new byte[][]{dz}, 1), "bad.kdz");
         List<String> log = new ArrayList<>();
-        List<Artifact> out = LgKdz.extractEncryptedKdz(f, tmp.newFolder("w3"), log::add);
+        List<Artifact> out = LgKdz.extractEncryptedKdz(f, tmp.newFolder("w3"), s -> true, log::add);
         assertNotNull(find(out, Role.SYSTEM));
         assertTrue(log.toString(), log.toString().contains("MD5 mismatch"));
     }
@@ -294,7 +294,7 @@ public class LgKdzEncryptedTest {
         byte[] c = cab(new String[]{"a.dz"}, new byte[][]{random(100, 1)}, 3);
         File f = kdz(c, "lzx.kdz");
         try {
-            LgKdz.extractEncryptedKdz(f, tmp.newFolder("w6"), s -> {});
+            LgKdz.extractEncryptedKdz(f, tmp.newFolder("w6"), s -> true, s -> {});
             fail("LZX must not be accepted");
         } catch (IOException e) {
             assertTrue(e.getMessage(), e.getMessage().contains("LZX"));
@@ -306,7 +306,7 @@ public class LgKdzEncryptedTest {
         File f = new File(tmp.getRoot(), "fw.cab");
         Files.write(f.toPath(), cab(new String[]{"fw.dz"}, new byte[][]{fw.dz}, 1));
         assertEquals("LG_KDZ_CAB", FirmwareToolset.detect(f));
-        List<Artifact> out = LgKdz.extractEncryptedKdz(f, tmp.newFolder("w7"), s -> {});
+        List<Artifact> out = LgKdz.extractEncryptedKdz(f, tmp.newFolder("w7"), s -> true, s -> {});
         assertArrayEquals(fw.boot, read(find(out, Role.BOOT)));
     }
 
@@ -315,7 +315,7 @@ public class LgKdzEncryptedTest {
         File f = new File(tmp.getRoot(), "bare.dz");
         Files.write(f.toPath(), fw.dz);
         assertEquals("LG_DZ", FirmwareToolset.detect(f));
-        List<Artifact> out = LgKdz.extractDz(f, tmp.newFolder("w8"), s -> {});
+        List<Artifact> out = LgKdz.extractDz(f, tmp.newFolder("w8"), s -> true, s -> {});
         assertArrayEquals(fw.system, read(find(out, Role.SYSTEM)));
     }
 
@@ -324,7 +324,7 @@ public class LgKdzEncryptedTest {
         File f = new File(tmp.getRoot(), "modemonly.dz");
         Files.write(f.toPath(), mstxDz(mstxEntry("amss.mbn", 3, amss.length, 0, amss, true)));
         try {
-            LgKdz.extractDz(f, tmp.newFolder("w9"), s -> {});
+            LgKdz.extractDz(f, tmp.newFolder("w9"), s -> true, s -> {});
             fail();
         } catch (IOException e) {
             assertTrue(e.getMessage(), e.getMessage().contains("no system/boot/recovery"));

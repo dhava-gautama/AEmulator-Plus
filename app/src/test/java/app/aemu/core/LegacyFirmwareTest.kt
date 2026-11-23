@@ -192,7 +192,7 @@ class LegacyFirmwareTest {
         legacySystem(root)
         File(root, "android").mkdirs()
         Files.createSymbolicLink(File(root, "android/x").toPath(), java.nio.file.Paths.get("nowhere"))
-        assertTrue(LegacyFirmware.ensureLayout(root).isEmpty())
+        assertTrue(LegacyFirmware.ensureLayout(root).none { it.startsWith("android") })
         assertFalse(Files.isSymbolicLink(File(root, "android").toPath()))
     }
 

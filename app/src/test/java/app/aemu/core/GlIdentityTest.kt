@@ -3,9 +3,12 @@ package app.aemu.core
 import org.junit.Assert.*
 import org.junit.Test
 import java.io.File
+import java.nio.file.Files
 
 class GlIdentityTest {
-    private val shim = File.createTempFile("libaemuglid", ".so").apply { deleteOnExit() }
+    private val shim = File(Files.createTempDirectory("aemuglid").toFile(), GlIdentity.LIB).apply {
+        writeText(""); deleteOnExit()
+    }
 
     @Test fun blankChipChangesNothing() {
         val base = mapOf("LD_PRELOAD" to "/n/libglbuf.so")

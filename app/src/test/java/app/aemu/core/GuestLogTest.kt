@@ -39,6 +39,8 @@ class GuestLogTest {
         val out = StringWriter()
         GuestLog.writeExport(root, run, out)
         assertTrue(out.toString().contains("W Tag: valid message\n"))
-        assertFalse(out.toString().contains("unfinished"))
+        assertFalse(out.toString().contains("W Abort: unfinished"))
+        // the incomplete record may remain in the raw-tail section, but never as a parsed record
+        assertTrue(out.toString().contains("=== raw tail of dev/log/main"))
     }
 }

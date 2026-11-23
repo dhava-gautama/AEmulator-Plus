@@ -1,8 +1,8 @@
 package app.aemu.core
 
 import java.io.File
-import kotlin.test.Test
-import kotlin.test.assertEquals
+import org.junit.Assert.assertEquals
+import org.junit.Test
 
 class BootClasspathRelocateTest {
     private fun tree(vararg files: String): File {
