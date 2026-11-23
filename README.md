@@ -2,75 +2,112 @@
 
 <img src="docs/assets/logo.png" width="128" alt="AEmulator Plus logo"/>
 
-# AEmulator Plus
+# AEmulator Plus — Personal Patch
 
-**Emulate almost any Android firmware — HTC Sense, TouchWiz, MIUI, AOSP — on a modern phone.** A fork of [AEmulator](https://github.com/uxazu/AEmulator) with more features and fixes.
+**An unofficial, personal patch build of [AEmulator Plus](https://github.com/somerandomusernam2/AEmulator-Plus).**
+Not affiliated with, endorsed by, or supported by the upstream author. Built by GitHub Actions because the
+maintenance PC is slow. Upstream features and credits are kept below.
 
-**🇬🇧 English** · [🇷🇺 Русский](docs/i18n/README.ru.md) · [🇺🇦 Українська](docs/i18n/README.uk.md) · [🇩🇪 Deutsch](docs/i18n/README.de.md) · [🇫🇷 Français](docs/i18n/README.fr.md) · [🇪🇸 Español](docs/i18n/README.es.md) · [🇧🇷 Português](docs/i18n/README.pt-BR.md) · [🇮🇹 Italiano](docs/i18n/README.it.md) · [🇵🇱 Polski](docs/i18n/README.pl.md) · [🇹🇷 Türkçe](docs/i18n/README.tr.md) · [🇸🇦 العربية](docs/i18n/README.ar.md) · [🇮🇷 فارسی](docs/i18n/README.fa.md) · [🇮🇳 हिन्दी](docs/i18n/README.hi.md) · [🇮🇩 Indonesia](docs/i18n/README.id.md) · [🇻🇳 Tiếng Việt](docs/i18n/README.vi.md) · [🇨🇳 简体中文](docs/i18n/README.zh-CN.md) · [🇯🇵 日本語](docs/i18n/README.ja.md) · [🇰🇷 한국어](docs/i18n/README.ko.md)
+[![Android CI](https://github.com/dhava-gautama/AEmulator-Plus/actions/workflows/android.yml/badge.svg)](https://github.com/dhava-gautama/AEmulator-Plus/actions/workflows/android.yml)
+
+[🇬🇧 English](README.md) · [Upstream translations (may describe upstream, not this patch)](docs/i18n/)
 
 </div>
 
 ---
 
-AEmulator Plus boots a real Android 1.0–17 system image straight from a firmware file you already have. It translates the old ARM code with a patched QEMU, emulates the kernel’s binder, draws with your phone’s GPU and plays sound through Android’s audio stack — everything runs inside a normal app. This project was made almost entirely with Claude Sonnet 5.5 (and the original emulator with Opus 5.5).
+> [!WARNING]
+> **This is a personal patch, not an official AEmulator Plus release.**
+> It is published so its few changes and reproducible CI builds can be inspected. Do not report problems with this
+> build to the upstream author. Ask upstream first whether a bug also happens on an official release. The APK is signed
+> with a personal key, so it **cannot update** an installed upstream/official build: uninstall that first (the VM images
+> in the app's private storage are deleted with it, so export anything you need).
+>
+> Source and binaries are provided under GPL-3.0, without warranty. Android, vendor skins and firmware belong to their
+> owners. See [NOTICE.md](NOTICE.md) and the [upstream licensing audit](docs/license-audit.md).
 
-## Features
+## What this patch is
 
-- Import almost any firmware format: Android-x86 `.iso`, CWM/TWRP ZIP, Samsung Odin `.tar.md5`, Google factory `.tgz`, `system.img`, OTA `system.new.dat.br`, Motorola `.sbf`, sparse images, EDL images, Spreadtrum `.pac`, HTC `.nbh`, HTC `RUU.exe`, and many other formats
-- Vendor skins work as shipped if compatible: HTC Sense, Samsung TouchWiz, MIUI, AOSP
-- Hardware graphics through the GL bridge, sound, touch and multitouch, network with a modern TLS proxy
-- Shared memory-card folder for APKs, music and photos
-- **VM screen themes and theme editor**: the navigation bar and the frame around the guest screen follow a theme — Original, Sunset, Gingerbread 2.x, Honeycomb 3.x, Holo 4.x or Lollipop 5.x — or your own, made in an editor with a live preview (key shapes and size, bar/key/pressed/frame colours, glow and halo, floating or flat bar, frame picture, rounded screen corners). Themes can be shared as `.aetheme` files. App settings › Appearance › VM screen theme.
-- **Arrange your library**: press and hold a ROM and drag it up or down to reorder it (classic list and 0.0.0.3 grid), and group ROMs into named folders that open and close — drop a ROM on a folder, or use its ⋮ menu › Move to folder
-- Material 3 Expressive interface in 19 languages
-- Free and open source (GPL-3.0)
+This repository is a patch queue on top of upstream **0.0.0.3.16**, not a new emulator. The upstream app boots a real
+Android 1.0–17 system image from a firmware file with a patched QEMU, a host-side binder/audio/GPU bridge and its own
+importer. That engine is unchanged here.
 
-## Quick start
+The personal patch currently contains:
 
-1. Download the APK from [Releases](https://github.com/somerandomusernam2/AEmulator-Plus/releases) and install it.
-2. Open AEmulator Plus → **Add firmware** and pick the file. Import takes a few minutes.
-3. Press **Start**. The first boot is slower: the system optimises its apps.
-4. Use the ⋮ menu for volume, power button and logs; the ⚙️ button opens app settings and language.
+1. **Network ADB survives a restart** — the VM menu's *ADB over network* switch is stored per VM and the server starts
+   again when the machine boots. Both the dialog switch and the `app.aemu.SHELL --ez adb` broadcast use the same path.
+   The listen port stays dynamic (first free port in 5555–5585) on purpose: a fixed root shell on `0.0.0.0` is easier
+   to find on a shared LAN (this is also the upstream maintainer's security argument).
+   Fixes [upstream issue #126](https://github.com/somerandomusernam2/AEmulator-Plus/issues/126).
+2. **Complete 3.16 translations** — the 38 new option strings and 18 missing keys are added to all 58 locales from
+   [upstream PR #127](https://github.com/somerandomusernam2/AEmulator-Plus/pull/127) by @power690, with authorship kept
+   in the commit.
+3. **Personal build identity** — `0.0.0.3.16-personal.1` / version code `316001`, update checks and the GitHub link point
+   at this fork instead of upstream, and CI builds both debug and release APKs.
+4. **GitHub Actions builds** — [.github/workflows/android.yml](.github/workflows/android.yml) runs the unit tests and
+   builds debug + release APKs on every push and tag. Nothing is compiled on the maintenance PC.
 
-## Requirements
+See [docs/personal-patch.md](docs/personal-patch.md) for the exact diff and the
+[upstream triage](docs/upstream-triage.md) for which open issues/PRs were considered (and why most engine bugs are not
+patched here).
 
-- Android 8.0+ on a 64-bit ARM phone (arm64-v8a)
-- About 1–3 GB of free space per firmware
-- A Snapdragon SoC is recommended, due to several issues with Mali GPUs
+## Download and install
 
-## Build from source
+1. Open [Releases](https://github.com/dhava-gautama/AEmulator-Plus/releases) and download the newest
+   `AEmulator-Plus-*-app.aemu.plus.apk`.
+2. Uninstall any official AEmulator Plus build first (different signing key, same package `app.aemu.plus`).
+3. Install the APK, open it, and import a firmware you own. Import takes a few minutes; the first boot is slower.
 
-The tested app release build uses JDK 21 and Android SDK 36. See [build/source instructions](docs/build-source.md), including native toolchain details and signing. 
+Requirements are the upstream ones: Android 8.0+ on a 64-bit ARM phone (arm64-v8a), 1–3 GB free per firmware, and
+ideally a Snapdragon SoC (Mali GPUs have known issues).
+
+## Build
+
+The tested toolchain is JDK 21, Android SDK platform 36, build-tools 36.0.0 and the checked-in Gradle 8.14.2 wrapper.
+Kotlin/Java bytecode targets Java 17.
+
+### GitHub Actions (recommended here)
+
+Push to `main`, open a pull request, or run **Actions → Android CI → Run workflow**. The workflow runs
+`testReleaseUnitTest`, `assembleDebug` and `assembleRelease`, then uploads the APKs as artifacts. Pushing a tag such as
+`v0.0.0.3.16-personal.2` also publishes a GitHub Release with an APK asset named
+`AEmulator-Plus-personal-app.aemu.plus.apk` (the in-app updater only accepts names ending in `-app.aemu.plus.apk`).
+
+Optional signing: add the repository secrets `SIGNING_KEYSTORE_BASE64` (base64 of a `.jks`),
+`SIGNING_STORE_PASSWORD`, `SIGNING_KEY_ALIAS` and `SIGNING_KEY_PASSWORD`. Without them the release APK is unsigned (the
+debug APK uses the runner's throwaway debug key). See [docs/personal-patch.md](docs/personal-patch.md#release-signing).
+
+### Locally
 
 ```bash
-git clone https://github.com/somerandomusernam2/AEmulator-Plus.git
+git clone https://github.com/dhava-gautama/AEmulator-Plus.git
 cd AEmulator-Plus
-./gradlew copyReleaseApks
+export JAVA_HOME=/path/to/jdk-21
+export ANDROID_HOME=/path/to/Android/Sdk
+sh gradlew --no-daemon testReleaseUnitTest assembleDebug
 ```
 
-## Credits
+`./gradlew copyReleaseApks` copies the release APK to `release-apks/<version>/`. Release signing uses an untracked
+`keystore.properties`; without it the release APK is unsigned. Upstream native/helper rebuilds (`native/*`) are **not**
+part of the app build and are unchanged by this patch — see [docs/build-source.md](docs/build-source.md).
 
-AEmulator Plus grew out of the HTC Desire HD and HTC One M7 emulators by [the original author](https://t.me/istratiit_ech) — their engine made this project possible.
+## Upstream and credits
 
-This is a modified fork of [uxazu/AEmulator](https://github.com/uxazu/AEmulator), which additionally uses many features from [drel4/AEmulator-Sunset](https://github.com/drel4/AEmulator-Sunset).
-### Contributors 
-- @RYuhMine - ZTE MMI images support, Wear SDK build fixes, ro.hardware value changer
-- @afonsocarolas - configurable emulated SIM cards, Wi-Fi, Portuguese (Portugal) translation, .sin and .ftf files importer, camera improvements, 3D UI and device skins
-- @felipevidal640-hue - Microphone support
-- @power690 - host battery reporter improvements, host resolution setting fix, boot card never minimizing on native engine fix
-- @TwrpGuy - massive help with maintaining the ROM catalog and uploads to it
-- RVM on Telegram - improvements to Mali GPU support, fixes for Samsung Behold II
+This patch would not exist without the upstream work. Please support and report genuine app bugs upstream:
 
-## Links
+- Personal patch: [dhava-gautama/AEmulator-Plus](https://github.com/dhava-gautama/AEmulator-Plus)
+- Upstream (base for this patch): [somerandomusernam2/AEmulator-Plus](https://github.com/somerandomusernam2/AEmulator-Plus)
+- Upstream's base: [drel4/AEmulator-Sunset](https://github.com/drel4/AEmulator-Sunset) and
+  [uxazu/AEmulator](https://github.com/uxazu/AEmulator)
+- Original HTC Desire HD / One M7 engine author: [t.me/istratiit_ech](https://t.me/istratiit_ech)
 
-- My fork: [somerandomusernam2/AEmulator-Plus](https://github.com/somerandomusernam2/AEmulator-Plus)
-- Upstream: [uxazu/AEmulator](https://github.com/uxazu/AEmulator)
-- AEmulator-Sunset (huge credits for many features): [drel4/AEmulator-Sunset](https://github.com/drel4/AEmulator-Sunset)
-- Author: [somerandomusername2](https://github.com/somerandomusernam2)
-- Original author: [t.me/istratiit_ech](https://t.me/istratiit_ech)
+Upstream contributors keep their credit: @RYuhMine (ZTE MMI images, Wear SDK fixes, `ro.hardware`), @afonsocarolas
+(emulated SIM/Wi-Fi, Portuguese, `.sin`/`.ftf`, camera, 3D UI/skins), @felipevidal640-hue (microphone), @power690
+(battery, resolution, boot card; also the translation completion used here), @TwrpGuy (ROM catalog), and RVM
+(Mali/Samsung fixes).
 
 ## License
 
-GPL-3.0. Android, trademarks and firmware belong to their owners.
-
-See [dated modification notices](NOTICE.md) and the [outstanding source/licensing audit](docs/license-audit.md). The GPL label is not a certification that every bundled prebuilt has complete matching source.
+GPL-3.0; see [LICENSE](LICENSE), [NOTICE.md](NOTICE.md) and the [dated modification notices](docs/license-audit.md).
+The GPL label is not a certification that every bundled prebuilt has complete matching source; that caveat is inherited
+unchanged from upstream.

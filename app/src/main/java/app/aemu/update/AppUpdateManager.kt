@@ -49,10 +49,12 @@ sealed interface UpdateState {
 }
 
 /** Modified for AEmulator Sunset on 2026-09-30: use the fork's releases.
- * Modified for AEmulator Plus on 2026-10-04: use the Plus releases. GPL-3.0; see NOTICE.md. */
+ * Modified for AEmulator Plus on 2026-10-04: use the Plus releases.
+ * Modified for the personal patch on 2026-11-23: only ever update from this fork's CI releases. Pointing the updater at
+ * upstream would offer an APK signed with the publisher's key, which cannot install over a personal build. GPL-3.0. */
 object AppUpdateManager {
-    private const val RELEASES_API = "https://api.github.com/repos/somerandomusernam2/AEmulator-Plus/releases"
-    private const val GITHUB_REPO_URL = "https://github.com/somerandomusernam2/AEmulator-Plus"
+    private const val RELEASES_API = "https://api.github.com/repos/dhava-gautama/AEmulator-Plus/releases"
+    private const val GITHUB_REPO_URL = "https://github.com/dhava-gautama/AEmulator-Plus"
 
     /**
      * Запрос к GitHub API для получения информации о последнем релизе с APK-файлом.

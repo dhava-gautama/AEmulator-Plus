@@ -1,0 +1,136 @@
+name: Android CI
+
+# Personal patch: build on GitHub runners so the maintenance PC does not have to compile the 500 MB engine bundle.
+# Push to main / a branch, open a PR, or run manually. A v* tag publishes a GitHub Release.
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write # needed by the tagged-release step; pulls/pushes only read by default
+
+concurrency:
+  group: android-ci-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  GRADLE_OPTS: >-
+    -Dorg.gradle.jvmargs=-Xmx4g
+    -Dfile.encoding=UTF-8
+
+jobs:
+  build:
+    name: Test and build APKs
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      # Mapped at job level so the signing step can test it in `if:` (secrets are not allowed directly in if).
+      SIGNING_KEYSTORE_BASE64: ${{ secrets.SIGNING_KEYSTORE_BASE64 }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install SDK platform and build tools
+        run: |
+          # `yes` ends with SIGPIPE once sdkmanager has read all licenses; do not fail the step on that.
+          yes | sdkmanager --licenses > /dev/null 2>&1 || true
+          sdkmanager --install "platforms;android-36" "build-tools;36.0.0" "platform-tools"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: ${{ github.ref != 'refs/heads/main' && !startsWith(github.ref, 'refs/tags/v') }}
+
+      - name: Decode release keystore (optional)
+        if: env.SIGNING_KEYSTORE_BASE64 != ''
+        env:
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          printf '%s' "$SIGNING_KEYSTORE_BASE64" | base64 --decode > "$GITHUB_WORKSPACE/keystore.jks"
+          {
+            echo "storeFile=keystore.jks"
+            echo "storePassword=$SIGNING_STORE_PASSWORD"
+            echo "keyAlias=$SIGNING_KEY_ALIAS"
+            echo "keyPassword=$SIGNING_KEY_PASSWORD"
+          } > keystore.properties
+          test -s keystore.jks && test -s keystore.properties
+          echo "Release signing enabled."
+
+      - name: Unit tests + debug/release APKs
+        run: |
+          set -euo pipefail
+          ./gradlew --no-daemon --stacktrace --max-workers=2 \
+            -Pkotlin.compiler.execution.strategy=in-process \
+            testReleaseUnitTest assembleDebug assembleRelease
+
+      - name: Collect APKs
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          cp app/build/outputs/apk/debug/app-debug.apk dist/AEmulator-Plus-personal-debug.apk
+          release_apk="$(find app/build/outputs/apk/release -maxdepth 1 -name '*.apk' -print -quit)"
+          test -n "$release_apk"
+          # The in-app updater only accepts names ending in -app.aemu.plus.apk (UpdateAssetPolicy.matches).
+          cp "$release_apk" dist/AEmulator-Plus-personal-app.aemu.plus.apk
+          ls -lh dist/
+          sha256sum dist/*.apk > dist/SHA256SUMS.txt
+          cat dist/SHA256SUMS.txt
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: AEmulator-Plus-personal-debug-${{ github.sha }}
+          path: dist/AEmulator-Plus-personal-debug.apk
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
+
+      - name: Upload release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: AEmulator-Plus-personal-release-${{ github.sha }}
+          path: |
+            dist/AEmulator-Plus-personal-app.aemu.plus.apk
+            dist/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
+
+      - name: Publish GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.ref_name }}
+          body: |
+            Personal patch build of AEmulator Plus, produced by GitHub Actions.
+
+            **Unofficial** — not the upstream release. It uses a separate signing key, so uninstall an official
+            AEmulator Plus build before installing this one. See the repository README and
+            `docs/personal-patch.md` for the included patch queue.
+
+            Installable APK: `AEmulator-Plus-personal-app.aemu.plus.apk`.
+            The debug build is available as a workflow artifact for this tag.
+          files: |
+            dist/AEmulator-Plus-personal-app.aemu.plus.apk
+            dist/AEmulator-Plus-personal-debug.apk
+            dist/SHA256SUMS.txt
+          fail_on_unmatched_files: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

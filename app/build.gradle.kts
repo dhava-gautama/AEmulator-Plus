@@ -58,8 +58,10 @@ android {
         // 28: гостевые бинарники запускаются из каталога данных приложения (W^X для targetSdk>=29)
         //noinspection ExpiredTargetSdkVersion
         targetSdk = 28
-        versionCode = 316
-        versionName = "0.0.0.3.16" // <AEmulator base>.<Plus release>
+        // Personal patch, 2026-11-23: a distinct, ever-increasing code/name so a CI build can replace the previous
+        // personal build (same signing key) and the in-app updater compares against this fork's own tags.
+        versionCode = 316001
+        versionName = "0.0.0.3.16-personal.1" // <AEmulator base>.<Plus release>-personal.<patch release>
         ndk { abiFilters += listOf("arm64-v8a") }
     }
 

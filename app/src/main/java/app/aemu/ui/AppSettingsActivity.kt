@@ -90,9 +90,10 @@ import app.aemu.BuildConfig
 import app.aemu.R
 
 /** Modified for AEmulator Sunset on 2026-09-30: fork links and attribution.
- * Modified for AEmulator Plus on 2026-10-04: Plus links; Sunset and original credited as upstream. */
+ * Modified for AEmulator Plus on 2026-10-04: Plus links; Sunset and original credited as upstream.
+ * Modified for the personal patch on 2026-11-23: source/downloads point at the personal build; Plus stays upstream. */
 object Links {
-    const val GITHUB = "https://github.com/somerandomusernam2/AEmulator-Plus"
+    const val GITHUB = "https://github.com/dhava-gautama/AEmulator-Plus"
     const val AUTHOR = "https://github.com/somerandomusernam2"
     const val PLUS = "https://github.com/somerandomusernam2/AEmulator-Plus"
     const val SUNSET = "https://github.com/drel4/AEmulator-Sunset"
@@ -316,7 +317,7 @@ private fun AppSettings(onBack: () -> Unit, onRestyle: () -> Unit) {
                 Section(stringResource(R.string.as_links)) {
                     Row_(Icons.Rounded.Person, stringResource(R.string.as_author), "somerandomusername2") { open(Links.AUTHOR) }
                     Row_(Icons.Rounded.History, stringResource(R.string.as_orig), "t.me/istratiit_ech") { open(Links.ORIGINAL) }
-                    Row_(Icons.Rounded.Code, stringResource(R.string.as_github), "github.com/somerandomusernam2/AEmulator-Plus") { open(Links.GITHUB) }
+                    Row_(Icons.Rounded.Code, stringResource(R.string.as_github), "github.com/dhava-gautama/AEmulator-Plus") { open(Links.GITHUB) }
                     Row_(Icons.Rounded.History, stringResource(R.string.as_upstream_row, "AEmulator Plus"), "github.com/somerandomusernam2/AEmulator-Plus") { open(Links.PLUS) }
                     Row_(Icons.Rounded.History, stringResource(R.string.as_upstream_row, "AEmulator Sunset"), "github.com/drel4/AEmulator-Sunset") { open(Links.SUNSET) }
                     Row_(Icons.Rounded.History, stringResource(R.string.as_original_row, "AEmulator"), "github.com/uxazu/AEmulator") { open(Links.UPSTREAM) }

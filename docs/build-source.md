@@ -1,5 +1,10 @@
 # Building AEmulator Plus
 
+> **Personal patch note (2026-11-23).** This checkout is the unofficial `dhava-gautama/AEmulator-Plus` patch fork, not
+> an upstream release. For it, `git clone https://github.com/dhava-gautama/AEmulator-Plus.git` and prefer the
+> [GitHub Actions build](../.github/workflows/android.yml). The instructions below are the upstream toolchain notes and
+> still apply; see [personal-patch.md](personal-patch.md) for signing and versioning differences.
+
 Updated 2026-10-11. AEmulator Plus is a modified fork of
 [drel4/AEmulator-Sunset](https://github.com/drel4/AEmulator-Sunset) (itself a fork of
 [uxazu/AEmulator](https://github.com/uxazu/AEmulator)); see [NOTICE.md](../NOTICE.md).

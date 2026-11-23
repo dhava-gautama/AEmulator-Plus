@@ -8,6 +8,12 @@ The upstream project grew from the HTC Desire HD and HTC One M7 emulators by
 the [original engine author](https://t.me/istratiit_ech). Those credits and the
 upstream Git history are intentionally preserved.
 
+**Personal patch (2026-11-23):** This checkout is a further modified version of
+AEmulator Plus 0.0.0.3.16, maintained by dhava-gautama as an unofficial personal patch. The dated changes since that
+tag are recorded in the Git history and in [docs/personal-patch.md](docs/personal-patch.md): per-VM network ADB
+persistence (upstream issue #126), the locale completion from upstream PR #127, personal version/update-channel
+changes, documentation and GitHub Actions. No upstream authorship is claimed for them.
+
 **Modification statement:** AEmulator Plus was derived from AEmulator Sunset
 `0.0.0.3-sunset.30`. Modifications by somerandomusernam2 (GitHub display name
 somerandomusername2) are dated from 2026-10-04; the individual changes are recorded in this
