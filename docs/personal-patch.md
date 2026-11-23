@@ -4,9 +4,9 @@ This repository is [somerandomusernam2/AEmulator-Plus](https://github.com/somera
 `v0.0.0.3.16` plus a deliberately small patch queue. It is **not** an official release and has no support promise.
 
 - Base commit: `7019c78` ("Version 0.0.0.3.16", 2026-11-22)
-- Patch version: `0.0.0.3.16-personal.1`, version code `316001`, package `app.aemu.plus`
+- Patch version: `0.0.0.3.16-personal.2`, version code `316002`, package `app.aemu.plus`
 - Maintainer of this patch: [dhava-gautama](https://github.com/dhava-gautama), not the upstream author
-- Upstream triage: [upstream-triage.md](upstream-triage.md)
+- Upstream triage: [upstream-triage.md](upstream-triage.md) and [upstream-of-upstream.md](upstream-of-upstream.md)
 
 ## Commit queue
 
@@ -15,6 +15,7 @@ This repository is [somerandomusernam2/AEmulator-Plus](https://github.com/somera
 | `33db9f6` | 3.16 option strings and 18 missing keys in all 58 locales (288 files, strings only; author @power690 kept) | [PR #127](https://github.com/somerandomusernam2/AEmulator-Plus/pull/127) |
 | `5f24722` | Network ADB switch persisted per VM and started at boot; dialog and shell broadcast share one path; unit test | [Issue #126](https://github.com/somerandomusernam2/AEmulator-Plus/issues/126) |
 | `f6c1146` | Repair the inherited JVM test suite (duplicate class, JUnit imports, stale call signatures, real `org.json`, 2 GiB test heap, missing fixture, test drift) | — |
+| `279eeb7` | Readable boot note and minimized boot pill on translucent theme colours (`contentColor = onSurface`) | [Sunset `47853d4`](https://github.com/drel4/AEmulator-Sunset/commit/47853d4) |
 | personal branding/docs | Version identity, update endpoint and GitHub link point at this fork; README/AGENT docs; CI workflow | — |
 
 Keep later work in separate, small commits and keep this table current.
@@ -42,7 +43,7 @@ as the UI.
 
 ## Personal build identity
 
-- `versionCode = 316001`, `versionName = "0.0.0.3.16-personal.1"` in [app/build.gradle.kts](../app/build.gradle.kts).
+- `versionCode = 316002`, `versionName = "0.0.0.3.16-personal.2"` in [app/build.gradle.kts](../app/build.gradle.kts).
 - `AppUpdateManager` reads releases from `dhava-gautama/AEmulator-Plus` only. Upstream releases are signed with a
   different key and cannot install over this build; offering them would be a broken update.
 - The Settings GitHub row points at this repository; the upstream rows are unchanged.

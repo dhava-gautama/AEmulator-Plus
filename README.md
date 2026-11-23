@@ -42,17 +42,19 @@ The personal patch currently contains:
 2. **Complete 3.16 translations** — the 38 new option strings and 18 missing keys are added to all 58 locales from
    [upstream PR #127](https://github.com/somerandomusernam2/AEmulator-Plus/pull/127) by @power690, with authorship kept
    in the commit.
-3. **Personal build identity** — `0.0.0.3.16-personal.1` / version code `316001`, update checks and the GitHub link point
+3. **Personal build identity** — `0.0.0.3.16-personal.2` / version code `316002`, update checks and the GitHub link point
    at this fork instead of upstream, and CI builds both debug and release APKs.
 4. **GitHub Actions builds** — [.github/workflows/android.yml](.github/workflows/android.yml) runs the unit tests and
    builds debug + release APKs on every push and tag. Nothing is compiled on the maintenance PC.
 5. **A test suite that actually runs** — upstream 0.0.0.3.16 cannot execute `testReleaseUnitTest` (a duplicate test
    class, a missing `kotlin.test` dependency, stale call signatures, `android.jar`'s `org.json` stubs, a too-small test
    heap and some test drift). Those are repaired here, so CI is a real signal rather than a build-only check.
+6. **Readable boot cards** — the boot note and the minimized boot pill now set `contentColor = onSurface`, the
+   Sunset.37 contrast fix for translucent theme colours ([Sunset `47853d4`](https://github.com/drel4/AEmulator-Sunset/commit/47853d4)).
 
-See [docs/personal-patch.md](docs/personal-patch.md) for the exact diff and the
-[upstream triage](docs/upstream-triage.md) for which open issues/PRs were considered (and why most engine bugs are not
-patched here).
+See [docs/personal-patch.md](docs/personal-patch.md) for the exact diff, the [upstream triage](docs/upstream-triage.md)
+for which open issues/PRs were considered, and the [upstream-of-upstream audit](docs/upstream-of-upstream.md) for why
+Sunset and uxazu had no remaining safe bug-fix patches beyond the contrast fix.
 
 ## Download and install
 

@@ -60,8 +60,8 @@ android {
         targetSdk = 28
         // Personal patch, 2026-11-23: a distinct, ever-increasing code/name so a CI build can replace the previous
         // personal build (same signing key) and the in-app updater compares against this fork's own tags.
-        versionCode = 316001
-        versionName = "0.0.0.3.16-personal.1" // <AEmulator base>.<Plus release>-personal.<patch release>
+        versionCode = 316002
+        versionName = "0.0.0.3.16-personal.2" // <AEmulator base>.<Plus release>-personal.<patch release>
         ndk { abiFilters += listOf("arm64-v8a") }
     }
 

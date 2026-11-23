@@ -40,3 +40,8 @@ started, and what was done with each. The goal is a **small, reviewable patch qu
 3. It must be attributable: keep the original commit author and link the upstream issue/PR.
 4. Anything that changes guest-visible behavior should be a separate commit and documented in
    [personal-patch.md](personal-patch.md), so it can be dropped when upstream fixes it.
+
+## Older upstreams
+
+See [upstream-of-upstream.md](upstream-of-upstream.md) for the Sunset and uxazu audit: both are older than Plus, their
+app fixes are already incorporated, and only the Sunset.37 contrast fix was still missing and was applied.
