@@ -1634,8 +1634,10 @@ class GuestVm(val ctx: Context, val img: GuestImage, val lowPowerBoot: Boolean =
             // Wi-Fi network itself (instead of the Ethernet placeholder below)
             if (svc.name == "zygote" && !legacyFw && wifiOn) {
                 synchronized(procs) { procs.remove("aemu-wifi") }?.let { runCatching { it.destroyForcibly() } }
+                val wifiClasspath = WifiEmu.guestClasspath(paths.root)
+                log("wifi: stub classpath $wifiClasspath")
                 startService(GuestService("aemu-wifi", listOf(appProcess,
-                    "-Djava.class.path=/${WifiEmu.JAR_PATH}", "/system/bin", "app.aemu.stub.WifiStub"), optional = true))
+                    "-Djava.class.path=$wifiClasspath", "/system/bin", "app.aemu.stub.WifiStub"), optional = true))
             }
             // (well before zygote: apexd of 10+ looks for vold first and only then registers its own service, which the
             // package manager requires)
@@ -1648,7 +1650,7 @@ class GuestVm(val ctx: Context, val img: GuestImage, val lowPowerBoot: Boolean =
             if (svc.name == "zygote" && !legacyFw && !wifiOn && (if (engine == Engine.N64) kernel.registeredNetwork else img.api in 21..25) && engine != Engine.GB && File(paths.root, "system/framework/aemu-stubs.jar").isFile) {
                 synchronized(procs) { procs.remove("aemu-net") }?.let { runCatching { it.destroyForcibly() } }
                 startStub(GuestService("aemu-net", listOf(appProcess,
-                    "-Djava.class.path=/system/framework/aemu-stubs.jar", "/system/bin", "app.aemu.stub.NetStub") + (if (engine == Engine.N64 && Kernel64.forApi(img.api).ethernetStandIn) listOf("ethernet") else emptyList()), optional = true))
+                    "-Djava.class.path=${GuestClasspath.of(paths.root, "/system/framework/aemu-stubs.jar")}", "/system/bin", "app.aemu.stub.NetStub") + (if (engine == Engine.N64 && Kernel64.forApi(img.api).ethernetStandIn) listOf("ethernet") else emptyList()), optional = true))
             }
             if (svc.name == "zygote" && engine == Engine.N64 && kernel.apexStandIn && File(paths.root, "system/framework/aemu-stubs.jar").isFile) {
                 apexStandInList()

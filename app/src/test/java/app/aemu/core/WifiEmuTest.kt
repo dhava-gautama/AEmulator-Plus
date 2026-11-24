@@ -88,6 +88,14 @@ class WifiEmuTest {
             assertFalse(File(root, WifiEmu.FILE).exists())
         } finally { root.deleteRecursively() }
     }
+    @Test fun wifiStubClasspathFindsTheApexJarOnAndroidSeventeen() {
+        val root = File.createTempFile("wifi-apex", "").apply { delete(); mkdirs() }
+        try {
+            assertEquals("/${WifiEmu.JAR_PATH}", WifiEmu.guestClasspath(root))
+            File(root, WifiEmu.APEX_JAR_PATH).apply { parentFile?.mkdirs(); writeText("jar") }
+            assertEquals("/${WifiEmu.JAR_PATH}:/${WifiEmu.APEX_JAR_PATH}", WifiEmu.guestClasspath(root))
+        } finally { root.deleteRecursively() }
+    }
     @Test fun settingsRoundTripThroughJson() {
         val s = VmSettings(wifi = true, wifiSsid = "Home", wifiPassword = "hunter2hunter2")
         val back = VmSettings.fromJson(s.toJson())

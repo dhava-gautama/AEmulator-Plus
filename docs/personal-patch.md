@@ -4,7 +4,7 @@ This repository is [somerandomusernam2/AEmulator-Plus](https://github.com/somera
 `v0.0.0.3.16` plus a deliberately small patch queue. It is **not** an official release and has no support promise.
 
 - Base commit: `7019c78` ("Version 0.0.0.3.16", 2026-11-22)
-- Patch version: `0.0.0.3.16-personal.3`, version code `316003`, package `app.aemu.plus`
+- Patch version: `0.0.0.3.16-personal.4`, version code `316004`, package `app.aemu.plus`
 - Maintainer of this patch: [dhava-gautama](https://github.com/dhava-gautama), not the upstream author
 - Upstream triage: [upstream-triage.md](upstream-triage.md) and [upstream-of-upstream.md](upstream-of-upstream.md)
 
@@ -17,6 +17,7 @@ This repository is [somerandomusernam2/AEmulator-Plus](https://github.com/somera
 | `f6c1146` | Repair the inherited JVM test suite (duplicate class, JUnit imports, stale call signatures, real `org.json`, 2 GiB test heap, missing fixture, test drift) | — |
 | `279eeb7` | Readable boot note and minimized boot pill on translucent theme colours (`contentColor = onSurface`) | [Sunset `47853d4`](https://github.com/drel4/AEmulator-Sunset/commit/47853d4) |
 | `4c9912a`, `b718ee8` | Device identity profiles (Pixel 6/7 Pro/8/9 and Galaxy S23 Ultra, API 31-35) + custom JSON + validator; ADB mDNS discovery and copy buttons | — |
+| `<wifi17>` | Android 17 GSI Wi-Fi/Internet: add `framework-wifi.jar` (`com.android.wifi` APEX) and `framework-connectivity.jar` (`com.android.tethering` APEX) to the `aemu-wifi`/`aemu-net` classpath; include stub logs in exports | — |
 | personal branding/docs | Version identity, update endpoint and GitHub link point at this fork; README/AGENT docs; CI workflow | — |
 
 Keep later work in separate, small commits and keep this table current.
@@ -44,7 +45,7 @@ as the UI.
 
 ## Personal build identity
 
-- `versionCode = 316003`, `versionName = "0.0.0.3.16-personal.3"` in [app/build.gradle.kts](../app/build.gradle.kts).
+- `versionCode = 316004`, `versionName = "0.0.0.3.16-personal.4"` in [app/build.gradle.kts](../app/build.gradle.kts).
 - `AppUpdateManager` reads releases from `dhava-gautama/AEmulator-Plus` only. Upstream releases are signed with a
   different key and cannot install over this build; offering them would be a broken update.
 - The Settings GitHub row points at this repository; the upstream rows are unchanged.

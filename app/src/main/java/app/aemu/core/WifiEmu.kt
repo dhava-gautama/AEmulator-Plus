@@ -27,6 +27,17 @@ object WifiEmu {
     const val JAR_NAME = "aemu-wifi.jar"
     const val JAR_PATH = "system/framework/$JAR_NAME"
 
+    /**
+     * Added for the personal patch (2026-11-24). From Android 17 a generic system image keeps the Wi-Fi framework classes in
+     * the com.android.wifi APEX (javalib/framework-wifi.jar), not in the boot class path. A wifi.jar app_process can still
+     * load WifiConfiguration/IWifiManager if the APEX jar is on its class path; ApexUnpacker puts it at /apex/com.android.wifi.
+     * On older releases the APEX path does not exist and the boot class path already has the classes.
+     */
+    const val APEX_JAR_PATH = "apex/com.android.wifi/javalib/framework-wifi.jar"
+
+    /** The guest class path for the Wi-Fi stub process. */
+    fun guestClasspath(root: File): String = GuestClasspath.of(root, "/$JAR_PATH")
+
     /** Same addressing as the Ethernet placeholder network of the 5.0–7.x stub (qemu "user" network layout). */
     const val IP = "10.0.2.15"
     const val GATEWAY = "10.0.2.2"
