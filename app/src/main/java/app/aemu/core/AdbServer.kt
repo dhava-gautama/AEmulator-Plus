@@ -1,5 +1,8 @@
 package app.aemu.core
 
+import android.content.Context
+import android.net.nsd.NsdManager
+import android.net.nsd.NsdServiceInfo
 import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
@@ -28,15 +31,21 @@ class AdbServer(private val vm: GuestVm) {
         private set
     private var server: ServerSocket? = null
     private val conns = ConcurrentHashMap.newKeySet<Socket>()
+    private var nsd: NsdManager? = null
+    private var nsdListener: NsdManager.RegistrationListener? = null
 
     val running get() = server != null
+
+    /** Personal patch, 2026-11-24: the mDNS instance name shown by `adb mdns services`. */
+    val mdnsName: String get() = "aemu-${vm.img.id}"
 
     fun start(): Boolean {
         if (server != null) return true
         for (p in 5555..5585 step 2) {
             val s = runCatching { ServerSocket(p, 4, InetAddress.getByName("0.0.0.0")).apply { reuseAddress = true } }.getOrNull() ?: continue
             server = s; port = p
-            vm.log("adb: listening on ${addresses().joinToString { "$it:$p" }.ifEmpty { "port $p" }}")
+            advertise(p)
+            vm.log("adb: listening on ${addresses().joinToString { "$it:$p" }.ifEmpty { "port $p" }}; mDNS $mdnsName")
             thread(name = "adb-accept", isDaemon = true) {
                 while (!s.isClosed) {
                     val c = runCatching { s.accept() }.getOrNull() ?: break
@@ -54,11 +63,48 @@ class AdbServer(private val vm: GuestVm) {
     }
 
     fun stop() {
+        unadvertise()
         val s = server ?: return
         server = null; port = 0
         runCatching { s.close() }
         conns.forEach { runCatching { it.close() } }
         vm.log("adb: stopped")
+    }
+
+    /**
+     * Personal patch, 2026-11-24: ADB over Wi-Fi discovery. The host-side server still binds a dynamic port; mDNS
+     * lets a PC find it without re-checking the menu (`adb mdns services`). Failure is not fatal: the IP:port display
+     * stays available.
+     */
+    private fun advertise(p: Int) {
+        if (nsdListener != null) return
+        runCatching {
+            val manager = vm.ctx.getSystemService(Context.NSD_SERVICE) as? NsdManager ?: return@runCatching
+            val info = NsdServiceInfo().apply {
+                serviceName = mdnsName
+                serviceType = "_adb._tcp."
+                port = p
+                setAttribute("banner", "aemu")
+            }
+            val listener = object : NsdManager.RegistrationListener {
+                override fun onServiceRegistered(registered: NsdServiceInfo) {
+                    vm.log("adb: mDNS registered as ${registered.serviceName}")
+                }
+                override fun onRegistrationFailed(serviceInfo: NsdServiceInfo, errorCode: Int) {
+                    vm.log("adb: mDNS registration failed ($errorCode)")
+                }
+                override fun onServiceUnregistered(serviceInfo: NsdServiceInfo) {}
+                override fun onUnregistrationFailed(serviceInfo: NsdServiceInfo, errorCode: Int) {}
+            }
+            manager.registerService(info, NsdManager.PROTOCOL_DNS_SD, listener)
+            nsd = manager; nsdListener = listener
+        }.onFailure { vm.log("adb: mDNS unavailable: ${it.message}") }
+    }
+
+    private fun unadvertise() {
+        val manager = nsd; val listener = nsdListener
+        nsd = null; nsdListener = null
+        if (manager != null && listener != null) runCatching { manager.unregisterService(listener) }
     }
 
     // ------------------------------------------------------------------ wire protocol

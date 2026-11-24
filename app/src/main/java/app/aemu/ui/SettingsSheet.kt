@@ -343,6 +343,7 @@ fun SettingsSheet(img: GuestImage, onDismiss: () -> Unit, onSave: (VmSettings, S
                 supportingText = { Text(stringResource(R.string.vs_baseband_sub)) }, singleLine = true,
                 modifier = Modifier.fillMaxWidth().padding(top = 4.dp))
             // SoC and GPU the VM reports live with the rest of the device identity
+            DeviceProfileSection(img, s) { s = it }
             SocPicker(img, s) { s = it }
             RamTypePicker(s) { s = it }
 

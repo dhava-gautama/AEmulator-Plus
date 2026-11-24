@@ -126,7 +126,7 @@ firmware and attach `host.log`/`logcat`. Do not mark such work "done" from a gre
 5. Update `docs/personal-patch.md` (commit queue table) and `docs/upstream-triage.md` (decision).
 6. Bump the version if the change is user-visible:
    - `versionName = "<upstream version>-personal.<n>"`, e.g. `0.0.0.3.16-personal.2`
-   - `versionCode` must strictly increase (currently `316002`; use e.g. `316003`).
+   - `versionCode` must strictly increase (currently `316003`; use e.g. `316004`).
 7. Run the unit tests locally if the SDK is available, otherwise push a branch and let CI prove it.
 8. Tag only after CI is green: `git tag v<versionName> && git push origin v<versionName>`.
 

@@ -193,6 +193,13 @@ data class VmSettings(
      * the guest's root shell easier to find on a shared network. See docs/personal-patch.md.
      */
     val adb: Boolean = false,
+    /**
+     * Added for the personal patch (2026-11-24): the device identity profile (see [DeviceProfiles]), or blank for the
+     * firmware's own identity. Applies at the next full VM boot.
+     */
+    val deviceProfile: String = "",
+    /** The JSON of a custom [DeviceProfile] when [deviceProfile] is "custom"; unused otherwise. */
+    val deviceProfileCustom: String = "",
 ) {
     fun toJson(): JSONObject = JSONObject()
         .put("width", width).put("height", height).put("density", density)
@@ -228,6 +235,7 @@ data class VmSettings(
         .put("useArtBootImage", useArtBootImage)
         .put("disableDex2oat", disableDex2oat)
         .put("adb", adb)
+        .put("deviceProfile", deviceProfile).put("deviceProfileCustom", deviceProfileCustom)
 
     companion object {
         const val NAV_DEFAULT = "back,home,recents,menu"
@@ -413,6 +421,9 @@ data class VmSettings(
                 useArtBootImage = o.optBoolean("useArtBootImage", d.useArtBootImage),
                 disableDex2oat = o.optBoolean("disableDex2oat", d.disableDex2oat),
                 adb = o.optBoolean("adb", d.adb),
+                deviceProfile = DeviceProfiles.byId(o.optString("deviceProfile", ""))?.id
+                    ?: o.optString("deviceProfile", "").takeIf { it == DeviceProfile.CUSTOM || it.isBlank() }.orEmpty(),
+                deviceProfileCustom = o.optString("deviceProfileCustom", "").take(DeviceProfile.MAX_JSON),
             )
         }
     }

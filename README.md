@@ -42,7 +42,7 @@ The personal patch currently contains:
 2. **Complete 3.16 translations** — the 38 new option strings and 18 missing keys are added to all 58 locales from
    [upstream PR #127](https://github.com/somerandomusernam2/AEmulator-Plus/pull/127) by @power690, with authorship kept
    in the commit.
-3. **Personal build identity** — `0.0.0.3.16-personal.2` / version code `316002`, update checks and the GitHub link point
+3. **Personal build identity** — `0.0.0.3.16-personal.3` / version code `316003`, update checks and the GitHub link point
    at this fork instead of upstream, and CI builds both debug and release APKs.
 4. **GitHub Actions builds** — [.github/workflows/android.yml](.github/workflows/android.yml) runs the unit tests and
    builds debug + release APKs on every push and tag. Nothing is compiled on the maintenance PC.
@@ -51,6 +51,10 @@ The personal patch currently contains:
    heap and some test drift). Those are repaired here, so CI is a real signal rather than a build-only check.
 6. **Readable boot cards** — the boot note and the minimized boot pill now set `contentColor = onSurface`, the
    Sunset.37 contrast fix for translucent theme colours ([Sunset `47853d4`](https://github.com/drel4/AEmulator-Sunset/commit/47853d4)).
+7. **Device identity profiles** — one-click Pixel 6 / 7 Pro / 8 / 9 identities for API 31-35, a custom JSON profile, and
+   an identity validator; cosmetic `Build.*` only, no attestation. See [docs/device-profiles.md](docs/device-profiles.md).
+8. **ADB mDNS** — the ADB dialog advertises `_adb._tcp` and shows copyable `adb connect` lines, so the dynamic port is
+   discoverable from a PC.
 
 See [docs/personal-patch.md](docs/personal-patch.md) for the exact diff, the [upstream triage](docs/upstream-triage.md)
 for which open issues/PRs were considered, and the [upstream-of-upstream audit](docs/upstream-of-upstream.md) for why
@@ -75,7 +79,7 @@ Kotlin/Java bytecode targets Java 17. AI agents should read [AGENT.md](AGENT.md)
 
 Push to `main`, open a pull request, or run **Actions → Android CI → Run workflow**. The workflow runs
 `testReleaseUnitTest`, `assembleDebug` and `assembleRelease`, then uploads the APKs as artifacts. Pushing a tag such as
-`v0.0.0.3.16-personal.2` also publishes a GitHub Release with an APK asset named
+`v0.0.0.3.16-personal.3` also publishes a GitHub Release with an APK asset named
 `AEmulator-Plus-personal-app.aemu.plus.apk` (the in-app updater only accepts names ending in `-app.aemu.plus.apk`).
 
 Optional signing: add the repository secrets `SIGNING_KEYSTORE_BASE64` (base64 of a `.jks`),

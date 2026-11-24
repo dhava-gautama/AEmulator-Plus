@@ -1293,6 +1293,14 @@ class GuestVm(val ctx: Context, val img: GuestImage, val lowPowerBoot: Boolean =
                 overrides["ro.vendor.build.fingerprint"] = fp; overrides["ro.bootimage.build.fingerprint"] = fp
             }
         }
+        // Personal patch, 2026-11-24: the selected device identity wins over the firmware's own product/build
+        // properties. It is applied last, after oneFingerprint, so every partition's fingerprint is the profile's.
+        // DeviceProfile.props() only carries identity keys; sdk, abi, zygote, hardware and init properties stay the
+        // engine's/firmware's.
+        DeviceProfiles.current(s, img.api)?.let { profile ->
+            overrides.putAll(profile.props())
+            log("device profile: ${profile.label} (${profile.fingerprint})")
+        }
         if (!props.prepare(overrides, later, if (engine == Engine.N64) kernel.propAreaSize else PropArea.SIZE)) error("property area not ready")
         // Added for AEmulator Plus (2026-11-15): a pre-1.0 runtime picks its virtual machine with runtime.vm (JamVM or Dalvik).
         // The property comes from the tree's own build.prop; it is put into the area again here so that an image imported

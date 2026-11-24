@@ -1322,9 +1322,19 @@ open class VmActivity : ComponentActivity() {
                     }
                     if (on) {
                         val ips = app.aemu.core.AdbServer.addresses()
-                        for (ip in ips.ifEmpty { listOf("127.0.0.1") })
-                            Text("adb connect $ip:${vm.adb.port}", style = MaterialTheme.typography.bodyLarge,
-                                fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace)
+                        for (ip in ips.ifEmpty { listOf("127.0.0.1") }) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text("adb connect $ip:${vm.adb.port}", style = MaterialTheme.typography.bodyLarge,
+                                    fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace, modifier = Modifier.weight(1f))
+                                TextButton(onClick = {
+                                    getSystemService(ClipboardManager::class.java)
+                                        .setPrimaryClip(ClipData.newPlainText("ADB", "adb connect $ip:${vm.adb.port}"))
+                                    Toast.makeText(this@VmActivity, R.string.m_adb_copied, Toast.LENGTH_SHORT).show()
+                                }) { Text(stringResource(R.string.m_adb_copy)) }
+                            }
+                        }
+                        Text(stringResource(R.string.m_adb_mdns, vm.adb.mdnsName), style = MaterialTheme.typography.bodySmall)
+                        Text(stringResource(R.string.m_adb_mdns_hint), style = MaterialTheme.typography.bodySmall)
                     }
                     Text(stringResource(R.string.m_adb_hint), style = MaterialTheme.typography.bodySmall)
                 }
