@@ -51,7 +51,7 @@ The personal patch currently contains:
    heap and some test drift). Those are repaired here, so CI is a real signal rather than a build-only check.
 6. **Readable boot cards** — the boot note and the minimized boot pill now set `contentColor = onSurface`, the
    Sunset.37 contrast fix for translucent theme colours ([Sunset `47853d4`](https://github.com/drel4/AEmulator-Sunset/commit/47853d4)).
-7. **Device identity profiles** — one-click Pixel 6 / 7 Pro / 8 / 9 identities for API 31-35, a custom JSON profile, and
+7. **Device identity profiles** — one-click Pixel 6 / 7 Pro / 8 / 9 and Galaxy S23 Ultra identities for API 31-35, a custom JSON profile, and
    an identity validator; cosmetic `Build.*` only, no attestation. See [docs/device-profiles.md](docs/device-profiles.md).
 8. **ADB mDNS** — the ADB dialog advertises `_adb._tcp` and shows copyable `adb connect` lines, so the dynamic port is
    discoverable from a PC.

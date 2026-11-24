@@ -26,8 +26,8 @@ class DeviceProfilesTest {
     @Test fun builtInProfilesAreMatchedToTheGuestApi() {
         assertEquals(listOf("pixel6_12"), DeviceProfiles.forApi(31).map { it.id })
         assertEquals(listOf("pixel6_12"), DeviceProfiles.forApi(32).map { it.id })
-        assertTrue(DeviceProfiles.forApi(33).map { it.id }.containsAll(listOf("pixel6_13", "pixel7pro_13")))
-        assertEquals(listOf("pixel8_14"), DeviceProfiles.forApi(34).map { it.id })
+        assertTrue(DeviceProfiles.forApi(33).map { it.id }.containsAll(listOf("pixel6_13", "pixel7pro_13", "s23ultra_13")))
+        assertTrue(DeviceProfiles.forApi(34).map { it.id }.containsAll(listOf("pixel8_14", "s23ultra_14")))
         assertEquals(listOf("pixel8_15", "pixel9_15"), DeviceProfiles.forApi(35).map { it.id })
         assertNull(DeviceProfiles.current(VmSettings(deviceProfile = "pixel8_14"), 33))
     }

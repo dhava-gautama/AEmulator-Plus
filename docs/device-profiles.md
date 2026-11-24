@@ -31,6 +31,8 @@ ordinary VM settings and can be edited afterwards.
 | `pixel6_12` | Pixel 6 | 31–32 | `SP2A.220505.002` (Android 12/12L) |
 | `pixel6_13` | Pixel 6 | 33 | `TP1A.220624.021` |
 | `pixel7pro_13` | Pixel 7 Pro | 33 | `TQ3A.230805.001.A2` |
+| `s23ultra_13` | Galaxy S23 Ultra | 33 | `TP1A.220624.014` / `S918BXXU1AWC8` |
+| `s23ultra_14` | Galaxy S23 Ultra | 34 | `UP1A.231005.007` / `S918BXXS3BXAD` |
 | `pixel8_14` | Pixel 8 | 34 | `UQ1A.240205.004` |
 | `pixel8_15` | Pixel 8 | 35 | `AP3A.241105.007` |
 | `pixel9_15` | Pixel 9 | 35 | `AP3A.241105.008` |
@@ -41,6 +43,10 @@ match.
 
 The built-in rows describe real factory builds, but Google's build data changes. A profile that does not boot on your
 image can be replaced with a custom one; the app does not download or update profiles.
+
+Pixel rows have no `soc` value: this app has no Tensor chip preset yet, so the guest still reports the firmware/host
+chip while the Build identity says Pixel. The Galaxy S23 Ultra rows set `sm8550p` (Snapdragon 8 Gen 2 for Galaxy), which
+matches that device's platform and GPU strings.
 
 ## Custom profile JSON
 

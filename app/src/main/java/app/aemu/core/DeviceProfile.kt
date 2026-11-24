@@ -157,6 +157,18 @@ object DeviceProfiles {
             width = 1440, height = 3120, density = 512,
         ),
         DeviceProfile(
+            id = "s23ultra_13", label = "Galaxy S23 Ultra (Android 13)", apis = 33..33, release = "13",
+            brand = "samsung", manufacturer = "samsung", model = "SM-S918B", device = "qssi", product = "dm3qxxx",
+            board = "kalama", buildId = "TP1A.220624.014", incremental = "S918BXXU1AWC8", securityPatch = "2023-04-01",
+            width = 1440, height = 3088, density = 450, soc = "sm8550p",
+        ),
+        DeviceProfile(
+            id = "s23ultra_14", label = "Galaxy S23 Ultra (Android 14)", apis = 34..34, release = "14",
+            brand = "samsung", manufacturer = "samsung", model = "SM-S918B", device = "qssi", product = "dm3qxxx",
+            board = "kalama", buildId = "UP1A.231005.007", incremental = "S918BXXS3BXAD", securityPatch = "2024-02-01",
+            width = 1440, height = 3088, density = 450, soc = "sm8550p",
+        ),
+        DeviceProfile(
             id = "pixel8_14", label = "Pixel 8 (Android 14)", apis = 34..34, release = "14",
             brand = "google", manufacturer = "Google", model = "Pixel 8", device = "shiba", product = "shiba",
             board = "shiba", buildId = "UQ1A.240205.004", incremental = "11269751", securityPatch = "2024-02-05",
