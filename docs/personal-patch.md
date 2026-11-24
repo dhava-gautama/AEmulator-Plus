@@ -17,7 +17,7 @@ This repository is [somerandomusernam2/AEmulator-Plus](https://github.com/somera
 | `f6c1146` | Repair the inherited JVM test suite (duplicate class, JUnit imports, stale call signatures, real `org.json`, 2 GiB test heap, missing fixture, test drift) | — |
 | `279eeb7` | Readable boot note and minimized boot pill on translucent theme colours (`contentColor = onSurface`) | [Sunset `47853d4`](https://github.com/drel4/AEmulator-Sunset/commit/47853d4) |
 | `4c9912a`, `b718ee8` | Device identity profiles (Pixel 6/7 Pro/8/9 and Galaxy S23 Ultra, API 31-35) + custom JSON + validator; ADB mDNS discovery and copy buttons | — |
-| `<wifi17>` | Android 17 GSI Wi-Fi/Internet: add `framework-wifi.jar` (`com.android.wifi` APEX) and `framework-connectivity.jar` (`com.android.tethering` APEX) to the `aemu-wifi`/`aemu-net` classpath; include stub logs in exports | — |
+| `d27fce5` | Android 17 GSI Wi-Fi/Internet: add `framework-wifi.jar` (`com.android.wifi` APEX) and `framework-connectivity.jar` (`com.android.tethering` APEX) to the `aemu-wifi`/`aemu-net` classpath; include stub logs in exports | — |
 | personal branding/docs | Version identity, update endpoint and GitHub link point at this fork; README/AGENT docs; CI workflow | — |
 
 Keep later work in separate, small commits and keep this table current.
