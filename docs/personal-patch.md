@@ -16,7 +16,7 @@ This repository is [somerandomusernam2/AEmulator-Plus](https://github.com/somera
 | `5f24722` | Network ADB switch persisted per VM and started at boot; dialog and shell broadcast share one path; unit test | [Issue #126](https://github.com/somerandomusernam2/AEmulator-Plus/issues/126) |
 | `f6c1146` | Repair the inherited JVM test suite (duplicate class, JUnit imports, stale call signatures, real `org.json`, 2 GiB test heap, missing fixture, test drift) | — |
 | `279eeb7` | Readable boot note and minimized boot pill on translucent theme colours (`contentColor = onSurface`) | [Sunset `47853d4`](https://github.com/drel4/AEmulator-Sunset/commit/47853d4) |
-| `<device>` | Device identity profiles (Pixel 6/7 Pro/8/9, API 31-35) + custom JSON + validator; ADB mDNS discovery and copy buttons | — |
+| `4c9912a` | Device identity profiles (Pixel 6/7 Pro/8/9, API 31-35) + custom JSON + validator; ADB mDNS discovery and copy buttons | — |
 | personal branding/docs | Version identity, update endpoint and GitHub link point at this fork; README/AGENT docs; CI workflow | — |
 
 Keep later work in separate, small commits and keep this table current.
