@@ -21,8 +21,8 @@ This repository is [somerandomusernam2/AEmulator-Plus](https://github.com/somera
 | `a045ddd`, `771a155` | Android 17 Wi-Fi toggle: restart the Wi-Fi stub after boot so it takes `wifi` back from the framework `WifiService` (which replaces it and then fails to create `wlan0`), and publish the initial enabled/connected state as sticky broadcasts so the framework's stale disabled state is replaced | — |
 | `b69ce98` | Android 17 Ethernet fallback: start the Ethernet placeholder network even while Wi-Fi is enabled, so internet works when the framework's Wi-Fi toggle is stuck off | — |
 | `ca40d6e` | Android 17 aconfigd: start the disabled `system_aconfigd_socket_service` / mainline socket service so `SettingsToPropertiesMapper` can stage flags instead of retrying a missing socket (1,504 errors) | — |
-| `<rebind>` | Android 17 Wi-Fi rebind: force-stop Settings/SystemUI after the stub takes `wifi` back, so their cached `IWifiManager` is replaced | — |
-| `<jit>` | Boot image off: disable ART's JIT, whose code-cache flush fails in that mode (11,898 errors in the log) | — |
+| `1335020` | Android 17 Wi-Fi rebind: force-stop Settings/SystemUI after the stub takes `wifi` back, so their cached `IWifiManager` is replaced | — |
+| `1335020` | Boot image off: disable ART's JIT, whose code-cache flush fails in that mode (11,898 errors in the log) | — |
 | personal branding/docs | Version identity, update endpoint and GitHub link point at this fork; README/AGENT docs; CI workflow | — |
 
 Keep later work in separate, small commits and keep this table current.
