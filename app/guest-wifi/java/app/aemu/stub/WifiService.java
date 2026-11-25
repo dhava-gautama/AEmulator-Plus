@@ -384,14 +384,14 @@ final class WifiService extends Binder {
                 ws.addFlags(0x10000000);
                 ws.putExtra("wifi_state", en ? 3 : 1);
                 ws.putExtra("previous_wifi_state", en ? 3 : 1);
-                Bcast.send(ws);
+                Bcast.send(ws, true);
 
                 Object ss = enumConst("android.net.wifi.SupplicantState", con ? "COMPLETED" : en ? "DISCONNECTED" : "INACTIVE");
                 if (ss instanceof Parcelable) {
                     Intent si = new Intent("android.net.wifi.supplicant.STATE_CHANGE");
                     si.addFlags(0x10000000);
                     si.putExtra("newState", (Parcelable) ss);
-                    Bcast.send(si);
+                    Bcast.send(si, true);
                 }
 
                 Intent ns = new Intent("android.net.wifi.STATE_CHANGE");
@@ -409,7 +409,7 @@ final class WifiService extends Binder {
                     Object wi = wifiInfo();
                     if (wi instanceof Parcelable) ns.putExtra("wifiInfo", (Parcelable) wi);
                 }
-                Bcast.send(ns);
+                Bcast.send(ns, true);
                 Refl.log("state broadcasts: enabled=" + en + " connected=" + con);
             } catch (Throwable t) {
                 Refl.log("state broadcasts failed: " + t);
