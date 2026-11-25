@@ -80,6 +80,9 @@ final class WifiService extends Binder {
         }
         messenger = new Messenger(new ChannelHandler(looper));
         scanHandler = new Handler(looper);
+        // Personal patch, 2026-11-25: publish the initial enabled/connected state. Without it a stub restarted after the
+        // framework's WifiService left a sticky "disabled" broadcast in place and Settings kept the toggle off.
+        if (android.os.Build.VERSION.SDK_INT >= 21) scanHandler.post(publishTask);
         StringBuilder all = new StringBuilder();
         for (Map.Entry<Integer, String> e : names.entrySet()) all.append(e.getKey()).append('=').append(e.getValue()).append(' ');
         Refl.log("transactions: " + all.toString().trim());
