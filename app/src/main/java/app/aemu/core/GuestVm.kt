@@ -397,6 +397,7 @@ class GuestVm(val ctx: Context, val img: GuestImage, val lowPowerBoot: Boolean =
         }
         stopping = false
         failure = null
+        wifiStubRestarted = false
         setAdbd(false)
         // Personal patch (upstream #126): bring the saved network ADB back for every boot, including VM reboots in the
         // same process, where the activity is not recreated and onCreate() would not run again.
@@ -3099,6 +3100,7 @@ class GuestVm(val ctx: Context, val img: GuestImage, val lowPowerBoot: Boolean =
         disableBrokenComponents()
         disableSharedConnectivity()
         skipInternetCheck()
+        restartWifiStubAfterBoot()
         stopCrashLoopReboot()
         if (img.api >= 34) runCatching { switchToFullUserOnHsum() }.onFailure { log("headless system user check failed: $it") }
         if (img.api >= 24) runCatching { enableHome() }.onFailure { log("home screen check failed: $it") }
@@ -3309,6 +3311,36 @@ class GuestVm(val ctx: Context, val img: GuestImage, val lowPowerBoot: Boolean =
                 "settings get global captive_portal_mode", 60_000)
             log("wifi: internet check off (captive_portal_mode=" + out.trim().lines().lastOrNull().orEmpty() + ")")
         }.onFailure { log("wifi: could not switch the internet check off: ${it.message}") }
+    }
+
+    @Volatile private var wifiStubRestarted = false
+
+    /**
+     * Personal patch, 2026-11-25. On Android 17 the framework starts its own WifiService in system_server after our
+     * aemu-wifi stub has registered "wifi"; the framework's service replaces ours, finds no Wi-Fi HAL, and settles in
+     * DisabledState. Settings then talks to that service and the toggle stays off. The watcher in the stub should take
+     * the name back, but on this image it does not (the service remains WifiServiceImpl's; see logcat "WifiService:
+     * WifiService starting up" followed by "WifiController: DisabledState.enter()"). Restart the stub once the framework
+     * has finished failing: the new process registers "wifi" after it, which ServiceManager overwrites, and registers
+     * the emulated network again. Host-side only; personal.5.
+     */
+    private fun restartWifiStubAfterBoot() {
+        if (wifiStubRestarted) return
+        wifiStubRestarted = true
+        if (img.api < 36 || !settings.wifi || !wifiSupported || !File(paths.root, WifiEmu.JAR_PATH).isFile) return
+        Thread({
+            // WifiService is constructed during SystemServer.startOtherServices(); give it time to fail its HAL setup
+            // and enter DisabledState before we take the name back.
+            try { Thread.sleep(5_000) } catch (_: InterruptedException) { return@Thread }
+            if (stopping || state != State.RUNNING) return@Thread
+            synchronized(procs) { procs.remove("aemu-wifi")?.let { runCatching { it.destroyForcibly() } } }
+            try { Thread.sleep(1_000) } catch (_: InterruptedException) { return@Thread }
+            if (stopping || state != State.RUNNING) return@Thread
+            val cp = WifiEmu.guestClasspath(paths.root)
+            log("wifi: restarting the stub after boot (the framework's WifiService failed its HAL setup); classpath $cp")
+            startService(GuestService("aemu-wifi", listOf(appProcess,
+                "-Djava.class.path=$cp", "/system/bin", "app.aemu.stub.WifiStub"), optional = true))
+        }, "wifi-stub-after-boot").apply { isDaemon = true }.start()
     }
 
     /**
