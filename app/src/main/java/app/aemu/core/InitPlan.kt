@@ -195,7 +195,7 @@ object InitPlan {
             val bin = sv.argv.first()
             val base = bin.substringAfterLast('/')
             // (a HAL marked oneshot is one its client restarts: the audio service)
-            (!sv.disabled || isStartedDisabledHal(sv)) && (!sv.oneshot || bin.substringBeforeLast('/').endsWith("/bin/hw") || isOplusMmList(bin)) && sv.cls != "charger" && !isLpm(sv.name, base, sv.cls) &&
+            (!sv.disabled || isStartedDisabledHal(sv)) && (!sv.oneshot || bin.substringBeforeLast('/').endsWith("/bin/hw") || isOplusMmList(bin) || isAconfigd(sv)) && sv.cls != "charger" && !isLpm(sv.name, base, sv.cls) &&
                 sv.name !in known && sv.name !in SKIP && base !in SKIP_BIN &&
                 // префиксом совпадают только явные «xxx_» и длинные имена: иначе «sh» отсекал бы shelld (MIUI) и т.п.
                 // Samsung's sensorhubservice is a binder service system_server waits for without a timeout (S4/S5 TouchWiz), not a sensor daemon
@@ -276,7 +276,20 @@ object InitPlan {
             (sv.name.startsWith("vendor.wifi_hal", true) || bin.substringAfterLast('/').startsWith("android.hardware.wifi@", true))
     }
 
-    private fun isStartedDisabledHal(sv: RcService) = isThermalHal(sv) || isVibratorHal(sv) || isWifiHal(sv)
+    private fun isStartedDisabledHal(sv: RcService) = isThermalHal(sv) || isVibratorHal(sv) || isWifiHal(sv) || isAconfigd(sv)
+
+    /**
+     * Personal patch, 2026-11-25. Android 17's aconfigd socket services are "disabled, oneshot" and init starts them with
+     * "start system_aconfigd_socket_service" / "start mainline_aconfigd_socket_service" in late-init. This plan does not
+     * execute those actions, and the services are not HALs, so they were dropped. SettingsToPropertiesMapper then logged
+     * "failed to connect to aconfigd_system socket: No such file or directory" 1504 times and new feature flags were not
+     * staged. Start the socket services like the other disabled services init starts by name; they create
+     * /dev/socket/aconfigd_system (and the mainline one) and exit.
+     */
+    private fun isAconfigd(sv: RcService): Boolean {
+        val base = sv.argv.firstOrNull()?.substringAfterLast('/').orEmpty()
+        return sv.name.endsWith("aconfigd_socket_service") || base == "aconfigd-system" || base == "aconfigd-mainline"
+    }
 
     /** Службы init, которые не запускаем: их роль играет хост, или они лезут в железо. */
     /**
