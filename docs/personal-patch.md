@@ -18,7 +18,7 @@ This repository is [somerandomusernam2/AEmulator-Plus](https://github.com/somera
 | `279eeb7` | Readable boot note and minimized boot pill on translucent theme colours (`contentColor = onSurface`) | [Sunset `47853d4`](https://github.com/drel4/AEmulator-Sunset/commit/47853d4) |
 | `4c9912a`, `b718ee8` | Device identity profiles (Pixel 6/7 Pro/8/9 and Galaxy S23 Ultra, API 31-35) + custom JSON + validator; ADB mDNS discovery and copy buttons | — |
 | `d27fce5` | Android 17 GSI Wi-Fi/Internet: add `framework-wifi.jar` (`com.android.wifi` APEX) and `framework-connectivity.jar` (`com.android.tethering` APEX) to the `aemu-wifi`/`aemu-net` classpath; include stub logs in exports | — |
-| `<wifi17b>` | Android 17 Wi-Fi toggle: restart the Wi-Fi stub after boot so it takes `wifi` back from the framework `WifiService`, which replaces it and then fails to create `wlan0` | — |
+| `a045ddd` | Android 17 Wi-Fi toggle: restart the Wi-Fi stub after boot so it takes `wifi` back from the framework `WifiService`, which replaces it and then fails to create `wlan0` | — |
 | personal branding/docs | Version identity, update endpoint and GitHub link point at this fork; README/AGENT docs; CI workflow | — |
 
 Keep later work in separate, small commits and keep this table current.
