@@ -1648,7 +1648,12 @@ class GuestVm(val ctx: Context, val img: GuestImage, val lowPowerBoot: Boolean =
                     "-Djava.class.path=/system/framework/aemu-stubs.jar", "/system/bin", "app.aemu.stub.VoldStub") + (if (kernel.volumeAtUserStart) listOf("userstart") else emptyList()), optional = true))
             }
             // 5.0–7.x: a registered network, otherwise ConnectivityService says "no active network" and browsers stay offline
-            if (svc.name == "zygote" && !legacyFw && !wifiOn && (if (engine == Engine.N64) kernel.registeredNetwork else img.api in 21..25) && engine != Engine.GB && File(paths.root, "system/framework/aemu-stubs.jar").isFile) {
+            // Personal patch, 2026-11-25: on Android 17 also bring up the Ethernet placeholder while Wi-Fi is enabled. The
+            // framework's WifiService takes the wifi binder, fails to create wlan0 and leaves Settings' toggle off; the
+            // Ethernet network then still gives the guest internet. It is a second NetworkAgent, but both carry the host's
+            // network and ConnectivityService picks one as default. Below 17 the Wi-Fi network is the only one.
+            val ethernetFallback = !wifiOn || img.api >= 37
+            if (svc.name == "zygote" && !legacyFw && ethernetFallback && (if (engine == Engine.N64) kernel.registeredNetwork else img.api in 21..25) && engine != Engine.GB && File(paths.root, "system/framework/aemu-stubs.jar").isFile) {
                 synchronized(procs) { procs.remove("aemu-net") }?.let { runCatching { it.destroyForcibly() } }
                 startStub(GuestService("aemu-net", listOf(appProcess,
                     "-Djava.class.path=${GuestClasspath.of(paths.root, "/system/framework/aemu-stubs.jar")}", "/system/bin", "app.aemu.stub.NetStub") + (if (engine == Engine.N64 && Kernel64.forApi(img.api).ethernetStandIn) listOf("ethernet") else emptyList()), optional = true))

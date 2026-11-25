@@ -42,7 +42,7 @@ The personal patch currently contains:
 2. **Complete 3.16 translations** — the 38 new option strings and 18 missing keys are added to all 58 locales from
    [upstream PR #127](https://github.com/somerandomusernam2/AEmulator-Plus/pull/127) by @power690, with authorship kept
    in the commit.
-3. **Personal build identity** — `0.0.0.3.16-personal.5` / version code `316005`, update checks and the GitHub link point
+3. **Personal build identity** — `0.0.0.3.16-personal.6` / version code `316006`, update checks and the GitHub link point
    at this fork instead of upstream, and CI builds both debug and release APKs.
 4. **GitHub Actions builds** — [.github/workflows/android.yml](.github/workflows/android.yml) runs the unit tests and
    builds debug + release APKs on every push and tag. Nothing is compiled on the maintenance PC.
@@ -62,6 +62,9 @@ The personal patch currently contains:
 10. **Android 17 Wi-Fi toggle fix** — the framework starts its own `WifiService` after our stub, replaces the `wifi`
     binder, fails to create `wlan0`, and leaves the toggle disabled. The stub is restarted once after boot so it owns
     `wifi` again and registers the emulated network. See [docs/personal-patch.md](docs/personal-patch.md).
+11. **Android 17 Ethernet fallback** — the Ethernet placeholder also starts while Wi-Fi is enabled, so internet works
+    even when the framework's Wi-Fi toggle is stuck off. Both networks use the host connection; ConnectivityService
+    picks the default.
 
 See [docs/personal-patch.md](docs/personal-patch.md) for the exact diff, the [upstream triage](docs/upstream-triage.md)
 for which open issues/PRs were considered, and the [upstream-of-upstream audit](docs/upstream-of-upstream.md) for why
@@ -86,7 +89,7 @@ Kotlin/Java bytecode targets Java 17. AI agents should read [AGENT.md](AGENT.md)
 
 Push to `main`, open a pull request, or run **Actions → Android CI → Run workflow**. The workflow runs
 `testReleaseUnitTest`, `assembleDebug` and `assembleRelease`, then uploads the APKs as artifacts. Pushing a tag such as
-`v0.0.0.3.16-personal.5` also publishes a GitHub Release with an APK asset named
+`v0.0.0.3.16-personal.6` also publishes a GitHub Release with an APK asset named
 `AEmulator-Plus-personal-app.aemu.plus.apk` (the in-app updater only accepts names ending in `-app.aemu.plus.apk`).
 
 Optional signing: add the repository secrets `SIGNING_KEYSTORE_BASE64` (base64 of a `.jks`),

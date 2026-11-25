@@ -4,7 +4,7 @@ This repository is [somerandomusernam2/AEmulator-Plus](https://github.com/somera
 `v0.0.0.3.16` plus a deliberately small patch queue. It is **not** an official release and has no support promise.
 
 - Base commit: `7019c78` ("Version 0.0.0.3.16", 2026-11-22)
-- Patch version: `0.0.0.3.16-personal.5`, version code `316005`, package `app.aemu.plus`
+- Patch version: `0.0.0.3.16-personal.6`, version code `316006`, package `app.aemu.plus`
 - Maintainer of this patch: [dhava-gautama](https://github.com/dhava-gautama), not the upstream author
 - Upstream triage: [upstream-triage.md](upstream-triage.md) and [upstream-of-upstream.md](upstream-of-upstream.md)
 
@@ -19,6 +19,7 @@ This repository is [somerandomusernam2/AEmulator-Plus](https://github.com/somera
 | `4c9912a`, `b718ee8` | Device identity profiles (Pixel 6/7 Pro/8/9 and Galaxy S23 Ultra, API 31-35) + custom JSON + validator; ADB mDNS discovery and copy buttons | — |
 | `d27fce5` | Android 17 GSI Wi-Fi/Internet: add `framework-wifi.jar` (`com.android.wifi` APEX) and `framework-connectivity.jar` (`com.android.tethering` APEX) to the `aemu-wifi`/`aemu-net` classpath; include stub logs in exports | — |
 | `a045ddd`, `771a155` | Android 17 Wi-Fi toggle: restart the Wi-Fi stub after boot so it takes `wifi` back from the framework `WifiService` (which replaces it and then fails to create `wlan0`), and publish the initial enabled/connected state as sticky broadcasts so the framework's stale disabled state is replaced | — |
+| `<wifi17c>` | Android 17 Ethernet fallback: start the Ethernet placeholder network even while Wi-Fi is enabled, so internet works when the framework's Wi-Fi toggle is stuck off | — |
 | personal branding/docs | Version identity, update endpoint and GitHub link point at this fork; README/AGENT docs; CI workflow | — |
 
 Keep later work in separate, small commits and keep this table current.
@@ -46,7 +47,7 @@ as the UI.
 
 ## Personal build identity
 
-- `versionCode = 316005`, `versionName = "0.0.0.3.16-personal.5"` in [app/build.gradle.kts](../app/build.gradle.kts).
+- `versionCode = 316006`, `versionName = "0.0.0.3.16-personal.6"` in [app/build.gradle.kts](../app/build.gradle.kts).
 - `AppUpdateManager` reads releases from `dhava-gautama/AEmulator-Plus` only. Upstream releases are signed with a
   different key and cannot install over this build; offering them would be a broken update.
 - The Settings GitHub row points at this repository; the upstream rows are unchanged.
