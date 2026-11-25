@@ -1807,7 +1807,13 @@ class GuestVm(val ctx: Context, val img: GuestImage, val lowPowerBoot: Boolean =
     private fun runWithoutBootImage(put: (String, String) -> Unit) {
         put("dalvik.vm.boot-image", "/system/framework/aemu-no-boot-image.art")
         put("dalvik.vm.image-dex2oat-flags", "--aemu-no-boot-image")
-        log("art: boot image off: the guest runs without one (setting \"Use ART boot image\")")
+        // Personal patch, 2026-11-25: without a boot image ART's JIT cannot flush its code cache on this host; the log
+        // filled with 11,898 "Cache flush failed triggering code allocation failure" lines and every allocation was
+        // rejected. Keep the runtime interpreter-only in this mode. Turning the boot image back on restores the JIT
+        // setting (this path is only taken when it is off).
+        put("dalvik.vm.usejit", "false")
+        log("art: boot image off: the guest runs without one (setting \"Use ART boot image\"); JIT off too " +
+            "(its code-cache flush fails in this mode)")
     }
 
     /**
@@ -3345,6 +3351,16 @@ class GuestVm(val ctx: Context, val img: GuestImage, val lowPowerBoot: Boolean =
             log("wifi: restarting the stub after boot (the framework's WifiService failed its HAL setup); classpath $cp")
             startService(GuestService("aemu-wifi", listOf(appProcess,
                 "-Djava.class.path=$cp", "/system/bin", "app.aemu.stub.WifiStub"), optional = true))
+            // Settings and SystemUI may already hold the framework's IWifiManager binder (SystemServiceRegistry caches it),
+            // so replacing the service alone does not move them. Restart both processes once; the new one resolves "wifi"
+            // again and gets our binder. They come back by themselves.
+            try { Thread.sleep(1_500) } catch (_: InterruptedException) { return@Thread }
+            if (stopping || state != State.RUNNING) return@Thread
+            runCatching {
+                val out = guestShell("am force-stop com.android.settings; am force-stop com.android.systemui", 30_000)
+                log("wifi: restarted Settings/SystemUI so they rebind to our wifi service" +
+                    if (out.isNotBlank()) " (${out.trim().take(120)})" else "")
+            }.onFailure { log("wifi: could not restart Settings/SystemUI: ${it.message}") }
         }, "wifi-stub-after-boot").apply { isDaemon = true }.start()
     }
 
