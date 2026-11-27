@@ -4,7 +4,7 @@ This repository is [somerandomusernam2/AEmulator-Plus](https://github.com/somera
 `v0.0.0.3.16` plus a deliberately small patch queue. It is **not** an official release and has no support promise.
 
 - Base commit: `7019c78` ("Version 0.0.0.3.16", 2026-11-22)
-- Patch version: `0.0.0.3.16-personal.8`, version code `316008`, package `app.aemu.plus`
+- Patch version: `0.0.0.3.16-personal.9`, version code `316009`, package `app.aemu.plus`
 - Maintainer of this patch: [dhava-gautama](https://github.com/dhava-gautama), not the upstream author
 - Upstream triage: [upstream-triage.md](upstream-triage.md) and [upstream-of-upstream.md](upstream-of-upstream.md)
 
@@ -23,6 +23,7 @@ This repository is [somerandomusernam2/AEmulator-Plus](https://github.com/somera
 | `ca40d6e` | Android 17 aconfigd: start the disabled `system_aconfigd_socket_service` / mainline socket service so `SettingsToPropertiesMapper` can stage flags instead of retrying a missing socket (1,504 errors) | — |
 | `1335020` | Android 17 Wi-Fi rebind: force-stop Settings/SystemUI after the stub takes `wifi` back, so their cached `IWifiManager` is replaced | — |
 | `1335020` | Boot image off: disable ART's JIT, whose code-cache flush fails in that mode (11,898 errors in the log) | — |
+| `<stable-net>` | Android 17 internet: do not register a Wi-Fi NetworkAgent on API 37 (the framework tears it down and closes app sockets); use only the validated Ethernet placeholder, set a non-null WifiInfo network key, and restart Chrome after the switch | — |
 | personal branding/docs | Version identity, update endpoint and GitHub link point at this fork; README/AGENT docs; CI workflow | — |
 
 Keep later work in separate, small commits and keep this table current.
@@ -50,7 +51,7 @@ as the UI.
 
 ## Personal build identity
 
-- `versionCode = 316008`, `versionName = "0.0.0.3.16-personal.8"` in [app/build.gradle.kts](../app/build.gradle.kts).
+- `versionCode = 316009`, `versionName = "0.0.0.3.16-personal.9"` in [app/build.gradle.kts](../app/build.gradle.kts).
 - `AppUpdateManager` reads releases from `dhava-gautama/AEmulator-Plus` only. Upstream releases are signed with a
   different key and cannot install over this build; offering them would be a broken update.
 - The Settings GitHub row points at this repository; the upstream rows are unchanged.

@@ -205,6 +205,9 @@ final class WifiService extends Binder {
         Refl.call(wi, "setLinkSpeed", Integer.valueOf(cfg.speed));
         Refl.call(wi, "setFrequency", Integer.valueOf(cfg.frequency));
         Refl.call(wi, "setMeteredHint", Boolean.FALSE);
+        // Personal patch, 2026-11-27: Android 17's NetworkIdentity rejects a WifiInfo whose network key is null
+        // ("WifiInfo contains a null wifiNetworkKey ..."). Any stable key is enough; the network is emulated.
+        if (android.os.Build.VERSION.SDK_INT >= 36) Refl.call(wi, "setNetworkKey", "aemu:" + cfg.bssid);
         try {
             Refl.call(wi, "setInetAddress", InetAddress.getByName(cfg.ip));
         } catch (Throwable ignored) { }

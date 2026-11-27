@@ -3357,8 +3357,9 @@ class GuestVm(val ctx: Context, val img: GuestImage, val lowPowerBoot: Boolean =
             try { Thread.sleep(1_500) } catch (_: InterruptedException) { return@Thread }
             if (stopping || state != State.RUNNING) return@Thread
             runCatching {
-                val out = guestShell("am force-stop com.android.settings; am force-stop com.android.systemui", 30_000)
-                log("wifi: restarted Settings/SystemUI so they rebind to our wifi service" +
+                val out = guestShell("am force-stop com.android.settings; am force-stop com.android.systemui; " +
+                    "am force-stop com.android.chrome", 30_000)
+                log("wifi: restarted Settings/SystemUI/Chrome so they rebind network/wifi" +
                     if (out.isNotBlank()) " (${out.trim().take(120)})" else "")
             }.onFailure { log("wifi: could not restart Settings/SystemUI: ${it.message}") }
         }, "wifi-stub-after-boot").apply { isDaemon = true }.start()

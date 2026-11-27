@@ -170,6 +170,13 @@ public final class WifiStub {
     /** On the main thread: bring the registered network in line with the connection state. */
     private static void applyConnection(Looper looper, WifiService svc, WifiConfig cfg, boolean connected) {
         if (connectivity == null) return; // registered once ConnectivityService is up (see watch)
+        // Personal patch, 2026-11-27: on Android 17 the framework's WifiService tears the Wi-Fi network down again
+        // ("the system no longer wants the network"); the churn closes app sockets and TLS handshakes fail. The Ethernet
+        // NetworkAgent from aemu-net is the stable default network, so do not register a Wi-Fi agent here.
+        if (android.os.Build.VERSION.SDK_INT >= 37) {
+            Refl.log("Android 17: Wi-Fi NetworkAgent disabled; the Ethernet placeholder carries the network");
+            return;
+        }
         try {
             if (connected && net == null) {
                 Object info = svc != null ? svc.wifiInfo() : null;
